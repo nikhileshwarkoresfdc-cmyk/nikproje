@@ -1,0 +1,179 @@
+ROUND 1: Project Deep Dive (MOST IMPORTANT)
+❓1. Explain your current project end-to-end.
+
+What interviewer expects: structured storytelling
+
+✅ Strong Answer:
+
+“Currently, I’m working on a Salesforce implementation for a financial services client.
+We handle around 1.5M+ customer records.
+I was mainly responsible for designing data models, writing Apex for integrations, and optimizing performance.
+We integrated Salesforce with external systems using REST APIs and handled async processing using Queueable Apex.
+One major challenge was handling large data volumes and avoiding governor limits, which we solved using bulkification and indexing.”
+
+👉 Tip: Always include:
+
+Domain
+Data volume
+Your role
+Challenges
+Solutions
+❓2. What exactly was YOUR role vs team role?
+
+✅ Strong Answer:
+
+“I was responsible for backend development, including Apex triggers, integrations, and performance tuning.
+I also contributed to solution design discussions and mentored 2 junior developers.”
+
+👉 Avoid saying “we did everything”
+
+❓3. Tell me one complex problem you solved.
+
+✅ Strong Answer:
+
+“We had a CPU timeout issue due to nested loops in triggers processing large data.
+I redesigned the logic using Maps and moved heavy processing to Queueable Apex, reducing execution time by ~60%.”
+
+🔥 ROUND 2: Apex + Triggers (HIGH PROBABILITY)
+❓4. You have multiple triggers on one object causing issues — what do you do?
+
+✅ Answer:
+
+“I consolidate them into a single trigger and use a trigger framework with handler classes to control execution order.”
+
+❓5. How do you handle recursion in triggers?
+
+✅ Answer:
+
+“I use a static Set of processed record IDs instead of a boolean flag to ensure better control in bulk scenarios.”
+
+❓6. A trigger is hitting governor limits in production — how do you fix?
+
+✅ Answer:
+
+“First, I analyze debug logs to identify bottlenecks.
+Then I remove SOQL/DML inside loops, use Maps for lookups, and move heavy logic to async processing.”
+
+❓7. Can we call future from future?
+
+❌ Wrong: Yes
+✅ Correct Answer:
+
+“No, future methods cannot call another future method. Instead, we can use Queueable Apex.”
+
+⚡ ROUND 3: Integration (VERY COMMON)
+❓8. Explain one integration you worked on.
+
+✅ Answer:
+
+“We integrated Salesforce with an external billing system using REST APIs.
+We used Named Credentials for authentication and Queueable Apex for async callouts.
+We also implemented retry logic for failed requests.”
+
+❓9. External system is down — what happens?
+
+✅ Answer:
+
+“We log failed requests in a custom object and retry them asynchronously using Queueable Apex. We also notify the support team.”
+
+❓10. How do you avoid duplicate records in integration?
+
+✅ Answer:
+
+“We use External ID fields and perform upsert operations instead of insert.”
+
+🚀 ROUND 4: LWC (FRONTEND REALITY CHECK)
+❓11. Difference between @wire and imperative calls?
+
+✅ Answer:
+
+“@wire is reactive and automatically refreshes when data changes, while imperative calls are used for controlled execution like button clicks.”
+
+❓12. How do LWCs communicate?
+
+✅ Answer:
+
+“Parent-child via properties/events, and unrelated components using Lightning Message Service.”
+
+💥 ROUND 5: Scenario-Based (KILLER QUESTIONS)
+❓13. Users complain system is slow — what do you check?
+
+✅ Answer:
+
+“I check:
+
+Slow queries
+Large data volume
+Inefficient triggers
+Reports with heavy filters
+Then optimize using indexing, async processing, and query tuning.”
+❓14. Data is inconsistent — how do you fix?
+
+✅ Answer:
+
+“I identify root cause (validation missing, integration issues), clean existing data, and enforce validation rules to prevent recurrence.”
+
+❓15. Records are not visible to users — why?
+
+✅ Answer:
+
+“I check:
+
+OWD settings
+Role hierarchy
+Sharing rules
+Profile permissions”
+🧠 ROUND 6: Advanced / Trap Questions
+❓16. What is the difference between Queueable and Batch?
+
+✅ Answer:
+
+“Batch is used for large datasets (>50k), while Queueable is for smaller async jobs and supports chaining.”
+
+❓17. Can we use DML in loops?
+
+❌ Wrong: Yes
+✅ Correct:
+
+“No, it causes governor limits. We should bulkify using collections.”
+
+❓18. What happens if a batch fails?
+
+✅ Answer:
+
+“The failed batch chunk can be retried. We monitor via Apex Jobs and logs.”
+
+🎯 ROUND 7: Real Senior-Level Questions
+❓19. How do you design for large data volume (LDV)?
+
+✅ Answer:
+
+“I use indexed fields, selective queries, archiving strategies, and avoid data skew.”
+
+❓20. What makes you a senior developer?
+
+✅ Answer:
+
+“I focus on scalable design, performance optimization, mentoring team members, and making architectural decisions.”
+
+🔥 FINAL ROUND (MOST IMPORTANT)
+❓21. Why should we hire you?
+
+✅ Answer:
+
+“I bring hands-on experience in designing scalable solutions, handling large data volumes, and solving real production issues.
+I don’t just write code — I design systems that perform well in real-world scenarios.”
+
+💣 COMMON REJECTION MISTAKES (Avoid these)
+
+❌ Saying:
+
+“I don’t remember”
+“We did everything”
+Only theory answers
+
+✅ Instead say:
+
+“In my project…”
+“We handled X records…”
+“We solved this using…”
