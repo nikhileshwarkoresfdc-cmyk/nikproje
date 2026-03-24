@@ -1,0 +1,205 @@
+
+Part 1: Architecture & Data Modeling
+Scenario: A global company has 50 million Account records. Reports are timing out. How do you fix this?
+
+Answer: Use Selective Queries (filters on indexed fields), request Custom Indexes, implement Skinny Tables for frequently used report fields, and move historical data to Big Objects or Data Cloud for archiving.
+
+Scenario: You need a relationship where the child record can occasionally exist without a parent, but you need Roll-Up Summaries. How do you achieve this?
+
+Answer: Use a Lookup Relationship. Since standard Roll-Ups require Master-Detail, use DLRS (Declarative Lookup Rollup Summaries) or a Trigger/Flow to calculate the values manually.
+
+Scenario: You are hitting the 10,000 DML rows limit in a migration. How do you handle it?
+
+Answer: Use Batch Apex with a smaller scope (e.g., 200) or the Bulk API 2.0 for millions of records.
+
+When would you choose a Junction Object over a simple Lookup?
+
+Answer: When a Many-to-Many relationship is needed (e.g., one Student can have many Classes, and one Class has many Students).
+
+Explain the "Ownership Skew" problem and its impact.
+
+Answer: When >10,000 records are owned by a single user. This causes performance issues during sharing rule recalculations or role hierarchy changes.
+
+How do you handle "Lookup Skew"?
+
+Answer: Avoid having thousands of child records associated with a single parent "dummy" record. Use multiple parent records to distribute the load.
+
+Scenario: You need to store sensitive PII data that only specific users can see, even if others have "View All" on the object.
+
+Answer: Use Salesforce Shield Platform Encryption and Restriction Rules to hide specific records from unauthorized users.
+
+What is the benefit of using External IDs for integration?
+
+Answer: It allows the upsert operation, preventing duplicates by matching records against the unique ID from the external system.
+
+How would you design a system to track every change to a field for 10 years?
+
+Answer: Enable Field Audit Trail (part of Salesforce Shield), which extends history retention from 18 months to 10 years.
+
+Explain the difference between a "Hard Delete" and a "Soft Delete" in the context of the Recycle Bin.
+
+Answer: Soft delete moves records to the Recycle Bin (remains for 15 days). Hard delete (available via Data Loader) bypasses the bin and permanently removes data.
+
+⚡ Part 2: Advanced Apex & Automation
+Scenario: A Trigger is hitting the "CPU Time Limit." What are your first 3 optimization steps?
+
+Answer: 1. Move logic to Asynchronous (Queueable). 2. Optimize SOQL by removing it from loops. 3. Use Maps to avoid nested loops (O(n) vs O(n²)).
+
+Why use Database.insert(records, false) instead of insert records?
+
+Answer: The allOrNone=false parameter allows Partial Success. Successful records are saved while failed ones are captured in the SaveResult list.
+
+How do you prevent a Trigger from firing recursively?
+
+Answer: Use a Static Boolean variable in a handler class to track if the trigger has already executed in the current transaction.
+
+When should you use Queueable Apex instead of @future?
+
+Answer: Use Queueable when you need Chaining (calling another job from the current one) or when passing Complex Objects (future only accepts primitives).
+
+Scenario: You need to call an external API whenever an Opportunity is Closed/Won. What is the safest way?
+
+Answer: Use a Record-Triggered Flow with an Asynchronous Path or a Trigger calling a Queueable method to avoid blocking the UI.
+
+Explain the "Trigger Framework" you use and why.
+
+Answer: (Example: Hapi or Kevin O'Hara's) It ensures one trigger per object, controls execution order, and makes code modular/testable.
+
+What is the "Transaction Finalizer" in Queueable Apex?
+
+Answer: A feature that allows you to attach an action (like logging or retrying) that runs after a Queueable job completes, regardless of success or failure.
+
+How do you handle Governor Limits in a multi-tenant environment?
+
+Answer: Bulkification, using the Limits class to check remaining resources before heavy operations, and using Platform Cache for frequent data.
+
+What is the "Order of Execution" when a record is saved? (High level)
+
+Answer: Validation Rules → Before Triggers → Duplicate Rules → Save to DB (not committed) → After Triggers → Assignment/Auto-response/Workflow → Processes/Flows → Roll-ups → Commit.
+
+Scenario: You have a Batch job that keeps failing with "Max depth reached."
+
+Answer: You are likely chaining too many jobs or have a circular dependency. Limit chaining or use Schedulable to gap the executions.
+
+🎨 Part 3: Lightning Web Components (LWC)
+Scenario: Your LWC is slow to load. How do you optimize it?
+
+Answer: Use Storable Actions (Caching), use the Wire Service for data (it caches automatically), and Lazy Load components using lwc:if.
+
+What is the difference between @wire and Imperative Apex calls?
+
+Answer: @wire is reactive (updates when params change) and cached. Imperative is for one-time actions (like a button click) or when you need to handle complex logic before the call.
+
+How do you communicate between two LWCs that are NOT in the same DOM hierarchy?
+
+Answer: Use Lightning Message Service (LMS).
+
+Explain the "Shadow DOM" in LWC.
+
+Answer: It provides CSS and DOM encapsulation, ensuring that styles from one component don't "leak" into another.
+
+Scenario: A user changes a value in a Child LWC. How do you update the Parent?
+
+Answer: The Child fires a Custom Event (dispatchEvent), and the Parent listens for that event to update its state.
+
+What is the purpose of connectedCallback() vs renderedCallback()?
+
+Answer: connectedCallback() runs when the component is inserted into the DOM (good for data fetching). renderedCallback() runs after every render (careful with infinite loops here).
+
+How do you handle errors in LWC from an Apex call?
+
+Answer: Use a try-catch block for imperative calls or check the error property in a @wire function.
+
+Can you use Third-Party JS libraries (like Chart.js) in LWC? How?
+
+Answer: Yes, upload it as a Static Resource and use loadScript from lightning/platformResourceLoader.
+
+What is the "RefreshView" API (2025/2026 feature)?
+
+Answer: It allows developers to refresh the data in the standard Salesforce workspace/page layout from an LWC without a full page reload.
+
+How do you secure an LWC against CRUD/FLS violations?
+
+Answer: Use Lightning Data Service (LDS) or, in Apex, use the WITH USER_MODE or Security.stripInaccessible methods.
+
+🔌 Part 4: Integrations & Security
+What is the difference between REST and SOAP APIs?
+
+Answer: REST is JSON-based, lightweight, and uses HTTP methods (GET, POST). SOAP is XML-based, strictly typed (WSDL), and used for complex legacy enterprise systems.
+
+Scenario: You need to integrate Salesforce with a system that doesn't have a public API.
+
+Answer: Use Middleware (like MuleSoft or Dell Boomi) or a Headless Browser/RPA approach if no other option exists.
+
+Explain "Named Credentials" and why they are a best practice.
+
+Answer: They store the endpoint URL and authentication (OAuth) in a secure way, so you don't hardcode sensitive info in Apex.
+
+What is a "JWT" (JSON Web Token) flow used for?
+
+Answer: Server-to-server integration where no user interaction (login screen) is possible.
+
+Scenario: An external system sends 10,000 updates per minute to Salesforce. How do you handle the volume?
+
+Answer: Use Platform Events for asynchronous processing or Change Data Capture (CDC) if Salesforce needs to push updates back.
+
+What is the difference between "Authentication" and "Authorization"?
+
+Answer: Authentication is who you are (login). Authorization is what you can do (permissions/OAuth scopes).
+
+How would you implement "Single Sign-On" (SSO) for a customer portal?
+
+Answer: Use SAML 2.0 with an Identity Provider (IdP) like Okta or Azure AD.
+
+What are "Platform Events" and how do they differ from "Outbound Messages"?
+
+Answer: Platform Events are modern, event-driven, and can be consumed by Apex/Flows/LWC. Outbound Messages are XML-only and limited to the "Soap" protocol.
+
+Scenario: You need to call an API that takes 2 minutes to respond. How do you handle this in Salesforce?
+
+Answer: Use Continuation in LWC or Apex to avoid hitting the 10-second synchronous limit.
+
+How do you protect your Salesforce API from being overwhelmed?
+
+Answer: Implement API Request Rate Limiting and use the Concurrent Request Limit monitoring.
+
+☁️ Part 5: Data Cloud & AI (Modern 2026 Focused)
+What is the primary purpose of Salesforce Data Cloud?
+
+Answer: To Harmonize data from disparate sources (AWS, Snowflake, Marketing Cloud) into a single unified profile using a canonical data model.
+
+How does "Identity Resolution" work in Data Cloud?
+
+Answer: It uses match rules (fuzzy or exact) to link records from different systems (e.g., a "Customer" in Shopify and an "Account" in Salesforce) into one Unified Individual.
+
+What is "Prompt Builder"?
+
+Answer: A tool that allows admins to create templates for AI prompts, grounding them with Salesforce record data to generate personalized content (like emails).
+
+Explain "Grounding" in the context of Einstein AI.
+
+Answer: Providing the LLM with real-time CRM data so its responses are accurate and relevant to the specific business context.
+
+What is "Calculated Insights" in Data Cloud?
+
+Answer: Complex SQL-based metrics (like "Lifetime Value") calculated across billions of rows in Data Cloud that can be used for segmentation.
+
+Scenario: A marketing team wants to target users who haven't opened an email in 30 days but bought a product. How do you build this?
+
+Answer: Use Data Cloud Segmentation to join Engagement data (Marketing Cloud) and Transaction data (Sales).
+
+What is the "Einstein Trust Layer"?
+
+Answer: A security framework that ensures PII is masked before being sent to an LLM and that data is never stored by the AI provider.
+
+Explain the difference between "Data Streams" and "Data Model Objects (DMOs)."
+
+Answer: Data Streams are the raw ingestion points. DMOs are the standardized objects (like Individual or Sales Order) that the raw data is mapped to.
+
+How can you trigger a Flow from Data Cloud?
+
+Answer: Use Data Actions to fire a platform event or call a flow when a specific condition is met in the Data Cloud.
+
+What is "Copilot" in the 2026 Salesforce ecosystem?
+
+Answer: A conversational AI assistant that can execute "Actions" (Apex, Flow, Prompt) to help users perform tasks within the CRM using natural language.
