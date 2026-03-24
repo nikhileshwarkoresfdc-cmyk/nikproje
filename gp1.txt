@@ -1,0 +1,723 @@
+🔥 Salesforce 5+ Years – Real-Time Scenario Interview Q&A
+1. Data Modeling & Architecture
+1. How did you design a scalable data model for a high-volume org?
+
+Answer:
+In one project handling ~5M+ records, I avoided lookup skew by:
+
+Using indexed fields (External IDs)
+Avoiding too many lookups to a single parent
+Splitting objects using vertical partitioning
+Using Big Objects for historical data
+2. How do you handle lookup skew?
+
+Answer:
+
+Avoid more than 10k records pointing to one parent
+Use ownership distribution
+Replace lookup with junction object
+Use Queue-based ownership
+3. When do you use Master-Detail vs Lookup?
+
+Answer:
+
+Use Master-Detail when:
+Tight coupling
+Roll-up summaries needed
+Use Lookup when:
+Loose relationship
+Independent ownership/security
+2. Apex & Performance
+4. How do you handle bulkification in real scenarios?
+
+Answer:
+
+Avoid SOQL/DML in loops
+Use Maps & Sets
+Process records in collections
+Use Trigger Framework
+5. How do you optimize slow Apex?
+
+Answer:
+
+Check SOQL selectivity
+Add indexes
+Reduce heap size
+Use asynchronous processing (Queueable/Future)
+6. Difference between Queueable and Future in real usage?
+
+Answer:
+
+Queueable:
+Supports chaining
+Complex objects
+Future:
+Simple async tasks
+Used Queueable for callouts + retry logic
+7. How do you handle callouts in triggers?
+
+Answer:
+
+Use Queueable or Future
+Store data temporarily
+Process async after commit
+3. Integration Scenarios
+8. How did you integrate Salesforce with external systems?
+
+Answer:
+
+Used REST APIs
+Middleware (MuleSoft)
+Handled:
+Retry logic
+Timeout handling
+Logging using custom object
+9. How do you handle API failures?
+
+Answer:
+
+Retry mechanism (Queueable chaining)
+Store failed records
+Use Custom Metadata for config
+Alert via email/slack
+10. What is your approach for real-time vs batch integration?
+
+Answer:
+
+Real-time → REST APIs
+Batch → Bulk API / Scheduled Apex
+4. Triggers & Framework
+11. Do you use Trigger Framework?
+
+Answer:
+Yes:
+
+One trigger per object
+Logic handled in handler classes
+Supports scalability and testing
+12. How do you prevent recursion?
+
+Answer:
+
+Static Boolean flag
+Or use Set of processed record IDs
+13. How do you handle multiple triggers conflict?
+
+Answer:
+
+Use single trigger + framework
+Control execution order via handler logic
+5. Security & Sharing
+14. Explain a complex sharing scenario you implemented.
+
+Answer:
+
+Used Apex Managed Sharing
+Based on region + role hierarchy
+Dynamic sharing recalculated via batch job
+15. Difference between Role Hierarchy and Sharing Rules?
+
+Answer:
+
+Role → Vertical access
+Sharing Rules → Horizontal access
+16. How do you handle large-scale sharing recalculations?
+
+Answer:
+
+Avoid frequent ownership changes
+Use Deferred Sharing
+Optimize sharing rules
+6. LWC / UI
+17. Why LWC over Aura?
+
+Answer:
+
+Better performance
+Modern JS
+Less abstraction
+18. How do you communicate between LWCs?
+
+Answer:
+
+Parent-child → props/events
+Unrelated → Lightning Message Service
+19. How do you optimize LWC performance?
+
+Answer:
+
+Use @track only when needed
+Lazy loading
+Avoid unnecessary re-renders
+7. Async Processing
+20. When do you use Batch Apex?
+
+Answer:
+
+Large datasets (>50k)
+Data cleanup
+Scheduled operations
+21. How do you monitor batch jobs?
+
+Answer:
+
+Apex Jobs page
+Custom logging
+Email alerts
+22. Difference between Batch and Queueable?
+
+Answer:
+
+Batch → Large data
+Queueable → Small async jobs + chaining
+8. Real-Time Problem Solving
+23. Production issue: Reports slow — how do you fix?
+
+Answer:
+
+Check filters
+Add indexes
+Reduce formula fields
+Use summary reports
+24. Users hitting governor limits — solution?
+
+Answer:
+
+Optimize triggers
+Reduce DML
+Use async processing
+25. Data migration strategy?
+
+Answer:
+
+Use Data Loader / ETL
+Migrate in order (parent → child)
+Validate with sandbox first
+9. DevOps & Deployment
+26. How do you handle deployments?
+
+Answer:
+
+Use CI/CD (Jenkins/Git)
+Sandbox → UAT → Prod
+Run all test classes
+27. What are common deployment failures?
+
+Answer:
+
+Missing dependencies
+Test failures
+Profile/permission issues
+10. Advanced Scenarios
+28. How do you design multi-org architecture?
+
+Answer:
+
+Use Integration layer
+Sync data via APIs
+Avoid tight coupling
+29. How do you handle large data volumes (LDV)?
+
+Answer:
+
+Use indexed fields
+Archive old data
+Skinny tables (if needed)
+30. Tell me about a challenging project.
+
+Answer:
+Example:
+
+Integrated Salesforce with ERP
+Handled async processing
+Solved performance issues
+Delivered scalable architecture
+💡 Pro Tip (VERY IMPORTANT)
+
+In interviews, don’t just answer — say things like:
+
+“In my project…”
+“We handled around 2M records…”
+“We optimized this using Queueable…”
+
+👉 That’s what gives the 5+ years real feel
+
+
+🔥 Salesforce Advanced Interview Q&A (31–100)
+11. Governor Limits & Optimization
+31. How do you handle “Too many SOQL queries” error in production?
+
+Answer:
+
+Identified recursive trigger causing repeated execution
+Moved logic to handler class + static control flag
+Combined queries using Maps
+32. How do you debug CPU time limit exceeded?
+
+Answer:
+
+Analyzed debug logs
+Reduced nested loops
+Used Map-based lookups instead of loops
+Shifted logic to Queueable Apex
+33. How do you make SOQL selective?
+
+Answer:
+
+Use indexed fields (Id, External Id, Audit fields)
+Avoid leading wildcards
+Filter on selective fields (<10% data)
+12. Complex Trigger Scenarios
+34. Multiple objects updating each other — how do you avoid infinite loop?
+
+Answer:
+
+Used static Set of processed IDs
+Designed logic to run only on specific conditions
+Avoid unnecessary updates
+35. How do you control trigger execution order?
+
+Answer:
+
+Single trigger per object
+Framework-based execution
+Sequence defined in handler class
+36. Trigger vs Flow — what do you use?
+
+Answer:
+
+Flow → Simple automation
+Apex → Complex logic, integrations, bulk operations
+13. Integration Deep Dive
+37. How do you handle authentication for external APIs?
+
+Answer:
+
+Used Named Credentials
+OAuth 2.0 authentication
+Avoid hardcoding credentials
+38. How do you design retry mechanism?
+
+Answer:
+
+Store failed records
+Retry using Queueable
+Limit retry attempts (e.g., 3 times)
+39. What is idempotency in integration?
+
+Answer:
+Ensures same request doesn’t create duplicate records
+
+Used External ID / Unique field
+40. How do you handle large payloads in integration?
+
+Answer:
+
+Compress data
+Use pagination
+Process in batches
+14. Data Migration & ETL
+41. How do you migrate millions of records?
+
+Answer:
+
+Bulk API
+Parallel processing
+Disable triggers temporarily (if safe)
+42. How do you maintain data integrity?
+
+Answer:
+
+Validate using staging tables
+Use external IDs
+Run reconciliation reports
+15. Security Advanced
+43. Difference between WITH SECURITY_ENFORCED and stripInaccessible?
+
+Answer:
+
+WITH SECURITY_ENFORCED → SOQL-level security
+stripInaccessible → Field-level security in Apex
+44. How do you secure Apex code?
+
+Answer:
+
+Use with sharing
+Check CRUD/FLS
+Avoid exposing sensitive data
+16. LWC Advanced
+45. How do you call Apex from LWC?
+
+Answer:
+
+Imperative call
+@wire (for reactive data)
+46. How do you cache data in LWC?
+
+Answer:
+
+@wire with cacheable=true
+Client-side storage
+47. How do you handle large data in UI?
+
+Answer:
+
+Pagination
+Lazy loading
+Virtual scrolling
+17. Async Advanced
+48. Can Queueable call another Queueable?
+
+Answer:
+Yes (chaining supported)
+
+49. Can Batch call Queueable?
+
+Answer:
+Yes, from execute method
+
+50. How do you handle long-running jobs?
+
+Answer:
+
+Break into smaller batches
+Monitor via logs
+18. Real-Time Scenarios
+51. Users report duplicate records — solution?
+
+Answer:
+
+Duplicate rules
+Matching rules
+External ID enforcement
+52. Email notifications not triggering — how do you debug?
+
+Answer:
+
+Check workflow/flow
+Debug logs
+Email deliverability settings
+53. Record locking issues — how to fix?
+
+Answer:
+
+Reduce simultaneous updates
+Optimize transactions
+Avoid parent-child updates together
+19. DevOps & CI/CD
+54. What is your branching strategy?
+
+Answer:
+
+Feature branches
+UAT branch
+Production branch
+55. How do you handle hotfixes?
+
+Answer:
+
+Patch directly in production branch
+Back merge to lower environments
+56. What tools have you used?
+
+Answer:
+
+Git
+Jenkins
+Salesforce CLI
+20. Advanced Apex Concepts
+57. What is Platform Event?
+
+Answer:
+Event-driven architecture
+Used for async communication
+
+58. What is Change Data Capture?
+
+Answer:
+Tracks record changes
+Used for integrations
+
+59. Difference between Future and Platform Events?
+
+Answer:
+
+Future → async processing
+Platform Event → event-based architecture
+21. Performance Optimization
+60. How do you improve report performance?
+
+Answer:
+
+Use filters
+Avoid too many joins
+Reduce formula fields
+61. How do you optimize SOQL joins?
+
+Answer:
+
+Use selective filters
+Avoid nested queries
+22. Advanced Sharing
+62. What is Apex Managed Sharing?
+
+Answer:
+Programmatic sharing using Apex
+
+63. When do you use it?
+
+Answer:
+Dynamic sharing logic not possible via UI
+
+23. Error Handling
+64. How do you handle exceptions?
+
+Answer:
+
+Try-catch
+Custom exception classes
+Logging
+65. How do you log errors?
+
+Answer:
+
+Custom object
+Debug logs
+Email alerts
+24. Real Project-Based Questions
+66. How did you reduce API response time?
+
+Answer:
+
+Optimized payload
+Reduced fields
+Used caching
+67. How did you handle a failing batch job?
+
+Answer:
+
+Debug logs
+Restart from failed scope
+68. How do you design reusable code?
+
+Answer:
+
+Utility classes
+Service layer pattern
+25. Advanced Design Patterns
+69. What patterns have you used?
+
+Answer:
+
+Trigger framework
+Factory pattern
+Singleton
+70. What is Unit of Work pattern?
+
+Answer:
+Manages DML operations in a single transaction
+
+26. Testing
+71. How do you write good test classes?
+
+Answer:
+
+Cover positive & negative cases
+Use Test.startTest/stopTest
+72. What is test data strategy?
+
+Answer:
+
+Create test data in code
+Avoid dependency on org data
+73. How do you test callouts?
+
+Answer:
+
+HttpCalloutMock
+27. Deployment Issues
+74. Test class failing in production but not sandbox?
+
+Answer:
+
+Data dependency issue
+Hardcoded values
+75. Code coverage low — solution?
+
+Answer:
+
+Add more test scenarios
+Cover all branches
+28. Advanced UI
+76. LWC vs Visualforce?
+
+Answer:
+
+LWC → modern UI
+VF → legacy
+77. When do you still use Visualforce?
+
+Answer:
+
+PDF generation
+Legacy systems
+29. Data Handling
+78. What is Skinny Table?
+
+Answer:
+Improves query performance for large objects
+
+79. When to use Big Objects?
+
+Answer:
+Huge historical data
+
+30. Scenario-Based Deep Questions
+80. Integration causing duplicate records — fix?
+
+Answer:
+
+Use External ID
+Upsert instead of insert
+81. Large data causing slow UI — solution?
+
+Answer:
+
+Pagination
+Indexed fields
+82. Flow vs Apex performance issue?
+
+Answer:
+
+Replace heavy flow with Apex
+83. High CPU usage in trigger?
+
+Answer:
+
+Optimize loops
+Move logic async
+84. User unable to see records?
+
+Answer:
+
+Check OWD
+Role hierarchy
+Sharing rules
+85. Deployment breaking validation rules?
+
+Answer:
+
+Deactivate temporarily
+Adjust test data
+86. Multiple integrations failing randomly?
+
+Answer:
+
+Add retry logic
+Logging
+87. Data inconsistency issue?
+
+Answer:
+
+Validation rules
+Data cleanup
+88. Email alerts not working?
+
+Answer:
+
+Check org-wide email
+Email deliverability
+89. Async job stuck?
+
+Answer:
+
+Check Apex jobs
+Restart job
+90. Large org performance issue?
+
+Answer:
+
+Indexing
+Archiving
+91. How do you handle deployments in large teams?
+
+Answer:
+
+Version control
+CI/CD
+92. Handling conflicting requirements?
+
+Answer:
+
+Discuss with stakeholders
+Prioritize
+93. How do you estimate work?
+
+Answer:
+
+Break into tasks
+Story points
+94. How do you handle tight deadlines?
+
+Answer:
+
+Prioritize critical tasks
+Deliver in phases
+95. How do you mentor juniors?
+
+Answer:
+
+Code reviews
+Knowledge sharing
+96. What is your biggest challenge?
+
+Answer:
+Explain real scenario + solution
+
+97. Why should we hire you?
+
+Answer:
+
+Strong experience
+Problem-solving ability
+98. What makes you senior?
+
+Answer:
+
+Architecture decisions
+Mentoring
+Performance optimization
+99. What is your approach to new features?
+
+Answer:
+
+Analyze requirement
+Design scalable solution
+100. Final killer question: Explain your project end-to-end
+
+Answer (Structure):
+
+Requirement
+Design
+Implementation
+Challenges
+Optimization
+Results
+🚀 Final Tip (Game Changer)
+
+If you say answers like this:
+
+❌ “I used Apex and triggers”
+✅ “In my project, we handled ~2M records and optimized triggers using Queueable and indexing…”
+
+👉 That instantly shows real 5+ years experience
+
+💥 If you want next level prep:
+
+I can give you:
+
+🎯 Mock interview (real panel simulation)
+📊 Project explanation script (perfect answer)
+🔥 Tricky questions interviewers use to reject candidates
+
+
